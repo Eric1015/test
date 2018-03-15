@@ -5,5 +5,4 @@ int main(void){
 	// add comment
 	// add another comment
 	// add one more comment
-	// add something else
 }
