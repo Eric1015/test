@@ -14,24 +14,41 @@ void path::BFS(){
 	vector<vector<pair<int,int>>> P(image.height(), vector<pair<int,int>> (image.width(),end));
 
     /* your code here */
+	queue<pair<int, int>> pendingPoints;
+	pendingPoints.push(start);
+
+	pair<int, int> predecessor;
+	while (!pendingPoints.empty()) {
+		pair<int, int> curr = pendingPoints.front();
+		V[curr.second][curr.first] = true;
+		vector<pair<int, int>> neighborhood = neighbors(curr);
+		for (size_t i = 0; i < neighborhood.size(); i++) {
+			if (good(V, curr, neighborhood[i])) {
+				pendingPoints.push(neighborhood[i]);
+				P[neighborhood[i].second][neighborhood[i].first] = curr;
+				V[neighborhood[i].second][neighborhood[i].first] = true;
+
+			}
+		}
+		pendingPoints.pop();
+	}
 
 	pathPts = assemble(P,start,end);
 }
 
 PNG path::render(){
-
-    /* your code here */
 	if (pathPts.size() <= 1) {
 		return image;
 	}
 	else {
-		for (int i = 0; i < pathPts.size(); i++) {
+		for (size_t i = 0; i < pathPts.size(); i++) {
 			pair<int, int> curr = pathPts[i];
 			RGBAPixel* currPixel = image.getPixel(curr.first, curr.second);
 			currPixel->r = 0xff;
 			currPixel->g = 0;
 			currPixel->b = 0;
 		}
+		return image;
 	}
 }
 
@@ -40,9 +57,9 @@ vector<pair<int,int>> path::getPath() { return pathPts;}
 int path::length() { return pathPts.size();}
 
 bool path::good(vector<vector<bool>> & v, pair<int,int> curr, pair<int,int> next){
-	if (next.first < 0 || next.first > image.width() - 1 || next.second < 0 || next.second > image.height() - 1)
+	if (next.second < 0 || (unsigned int)next.second > image.height() - 1 || next.first < 0 || (unsigned int)next.first > image.width() - 1)
 		return false;
-	else if (v[next.first][next.second])
+	else if (v[next.second][next.first])
 		return false;
 	else if (!closeEnough(*image.getPixel(curr.first, curr.second), *image.getPixel(next.first, next.second)))
 		return false;
@@ -53,15 +70,14 @@ bool path::good(vector<vector<bool>> & v, pair<int,int> curr, pair<int,int> next
 vector<pair<int,int>> path::neighbors(pair<int,int> curr) {
 	vector<pair<int,int>> n;
 
-    /* your code here */
 	pair<int, int> above = make_pair(curr.first, curr.second - 1);
 	pair<int, int> right = make_pair(curr.first + 1, curr.second);
 	pair<int, int> bottom = make_pair(curr.first, curr.second + 1);
 	pair<int, int> left = make_pair(curr.first - 1, curr.second);
-	n.push_back(above);
-	n.push_back(right);
-	n.push_back(bottom);
 	n.push_back(left);
+	n.push_back(bottom);
+	n.push_back(right);
+	n.push_back(above);
 	return n;
 }
 
@@ -71,7 +87,22 @@ vector<pair<int,int>> path::assemble(vector<vector<pair<int,int>>> & p,pair<int,
 	stack<pair<int,int>> S; */
 
     /* your code here */
+	vector<pair<int, int>> shortestPath;
+	stack < pair<int, int>> S;
 
+	pair<int, int> curr = e;
+	while (curr != s) {
+		S.push(curr);
+		curr = p[curr.second][curr.first];
+	}
+	S.push(s);
+
+	while (!S.empty()) {
+		shortestPath.push_back(S.top());
+		S.pop();
+	}
+	
+	return shortestPath;
 }
 
 bool path::closeEnough(RGBAPixel p1, RGBAPixel p2){
