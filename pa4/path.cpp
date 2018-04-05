@@ -91,6 +91,10 @@ vector<pair<int,int>> path::assemble(vector<vector<pair<int,int>>> & p,pair<int,
 	stack < pair<int, int>> S;
 
 	pair<int, int> curr = e;
+	if (p[curr.second][curr.first] == e) {
+		shortestPath.push_back(s);
+		return shortestPath;
+	}
 	while (curr != s) {
 		S.push(curr);
 		curr = p[curr.second][curr.first];
