@@ -37,18 +37,19 @@ void path::BFS(){
 }
 
 PNG path::render(){
+	PNG copy = PNG(image);
 	if (pathPts.size() <= 1) {
-		return image;
+		return copy;
 	}
 	else {
 		for (size_t i = 0; i < pathPts.size(); i++) {
 			pair<int, int> curr = pathPts[i];
-			RGBAPixel* currPixel = image.getPixel(curr.first, curr.second);
+			RGBAPixel* currPixel = copy.getPixel(curr.first, curr.second);
 			currPixel->r = 0xff;
 			currPixel->g = 0;
 			currPixel->b = 0;
 		}
-		return image;
+		return copy;
 	}
 }
 
